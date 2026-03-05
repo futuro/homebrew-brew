@@ -13,7 +13,7 @@ class CyrusSaslXoauth2 < Formula
   def install
     system '/usr/bin/sed', '-e', 's/^libtoolize/glibtoolize/', '-i', '', 'autogen.sh'
     system './autogen.sh'
-    system './configure', '--disable-silent-rules' #, "--with-cyrus-sasl=#{prefix}"
+    system './configure', '--disable-silent-rules', *std_configure_args
     system 'make', 'install'
   end
 end
