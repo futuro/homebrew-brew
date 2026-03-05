@@ -11,12 +11,12 @@ class CyrusSaslXoauth2 < Formula
   depends_on 'cyrus-sasl'
 
   def install
-    system '/usr/bin/sed', '-e', 's/^libtoolize/glibtoolize/', '-i', '', 'autogen.sh'
+    system '/usr/bin/sed', '-e', 's/^libtoolize/glibtoolize/', '-e', 's/^install/ginstall/', '-i', '', 'autogen.sh'
     system './autogen.sh'
     system './configure',
            '--disable-silent-rules',
            "--prefix=#{prefix}",
-           "--with-cyrus-sasl=/opt/homebrew/opt"
+           "--with-cyrus-sasl=/opt/homebrew/opt/cyrus-sasl"
     system 'make', 'install'
   end
 end
