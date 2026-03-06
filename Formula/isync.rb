@@ -13,7 +13,7 @@ class Isync < Formula
 
   depends_on "berkeley-db@5"
   depends_on "openssl@3"
-  depends_on "cyrus-sasl-xoauth2"
+  depends_on "cyrus-sasl"
 
   on_linux do
     depends_on "zlib-ng-compat"
