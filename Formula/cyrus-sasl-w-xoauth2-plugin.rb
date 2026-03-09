@@ -1,4 +1,4 @@
-class CyrusSasl < Formula
+class CyrusSaslWXoauth2Plugin < Formula
   desc "Simple Authentication and Security Layer"
   homepage "https://www.cyrusimap.org/sasl/"
   url "https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.28/cyrus-sasl-2.1.28.tar.gz"
@@ -10,8 +10,17 @@ class CyrusSasl < Formula
 
   depends_on "krb5"
   depends_on "openssl@3"
+  depends_on 'libtool' => :build
+  depends_on 'autoconf' => :build
+  depends_on 'automake' => :build
+  depends_on 'coreutils' => :build
+  depends_on 'make' => :build
 
   uses_from_macos "libxcrypt"
+
+  resource "xoauth2-plugin" do
+    url 'https://github.com/futuro/cyrus-sasl-xoauth2.git', branch: 'main'
+  end
 
   def install
     system "./configure",
@@ -20,6 +29,23 @@ class CyrusSasl < Formula
       "--disable-silent-rules",
       "--prefix=#{prefix}"
     system "make", "install"
+
+    resource('xoauth2-plugin').stage do
+      ENV.prepend_path "PATH", "#{Formula["libtool"].opt_libexec}/gnubin"
+      ENV.prepend_path "PATH", "#{Formula["make"].opt_libexec}/gnubin"
+      ENV.prepend_path "PATH", "#{Formula["coreutils"].opt_libexec}/gnubin"
+      ENV.append "LDFLAGS", "-L#{opt_lib}"
+      ENV.append "CPPFLAGS", "-I#{opt_include}"
+      ENV.prepend_path "PKG_CONFIG_PATH", "#{opt_lib}/pkgconfig"
+
+      system './autogen.sh'
+      system './configure',
+             '--disable-silent-rules',
+             # "--prefix=#{cyrus_sasl.opt_prefix}",
+             "--with-cyrus-sasl=#{opt_prefix}"
+      system 'make', 'install'
+
+    end
   end
 
   test do
